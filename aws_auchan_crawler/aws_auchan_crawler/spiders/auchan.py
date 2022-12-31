@@ -1,4 +1,4 @@
-from scrapy import Spider, Request
+from scrapy import Spider, Request, Selector
 from scrapy.linkextractors import LinkExtractor
 from scrapy.http.response.html import HtmlResponse
 from scrapy.exceptions import IgnoreRequest
@@ -26,11 +26,25 @@ class AuchanSpider(Spider):
             pass
 
     def parse_sub_category(self, response: HtmlResponse):
-        #TODO: scrap the products
-        with open("text_sub.txt", "a+", encoding="utf-8") as f:
-            f.write(f"{response.url}\n")
+        list_pages =  response.css(".pagination-item::text").getall()
+        last_page_nb = int(list_pages[-1])
+
+        # Don't need to re-parse the first page a it was parsed just now
+        # We will simply call the parse products function at the end using this response
+
+        for page_nb in range(2, last_page_nb + 1):
+            page_url = f"{response.url}?page={page_nb}"
+            yield Request(page_url, callback=self.parse_product_page)
+
+        # Scraping the first page products
+        self.parse_product_page(response)
 
     def parse_sub_category_err(self, failure: Failure):
         if failure.check(IgnoreRequest):
             #TODO: log or handle the fact that auchan blocked the scraper for the sub-cat
             pass
+
+    def parse_product_page(self, response: HtmlResponse):
+        #TODO: scrap all the products in the page
+        with open("text_prod.txt", "a+", encoding="utf-8") as f:
+            f.write(f"{response.url}\n")
