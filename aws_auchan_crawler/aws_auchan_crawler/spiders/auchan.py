@@ -11,6 +11,7 @@ class AuchanSpider(Spider):
     start_urls = ['http://www.auchan.fr/']
     category_extractor = LinkExtractor(restrict_css=".navigation-node")
     sub_category_extractor = LinkExtractor(restrict_xpaths="//*[text() = 'Voir tous les produits']")
+    product_extractor = LinkExtractor(restrict_xpaths="//article")
 
     def parse(self, response: HtmlResponse):
         for link in self.category_extractor.extract_links(response):
@@ -45,6 +46,10 @@ class AuchanSpider(Spider):
             pass
 
     def parse_product_page(self, response: HtmlResponse):
-        #TODO: scrap all the products in the page
-        with open("text_prod.txt", "a+", encoding="utf-8") as f:
-            f.write(f"{response.url}\n")
+        for link in self.product_extractor.extract_links(response):
+            yield Request(link.url, callback=self.parse_product)
+
+    def parse_product(self, response: HtmlResponse):
+        #TODO: scrap all the product infos
+        with open("text_prod_list.txt", "a+", encoding="utf-8") as f:
+            f.write(f"- {response.url}\n")
