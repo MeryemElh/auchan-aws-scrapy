@@ -4,6 +4,7 @@ from scrapy.http.response.html import HtmlResponse
 from scrapy.exceptions import IgnoreRequest
 from twisted.python.failure import Failure
 
+from aws_auchan_crawler.items import AwsAuchanCrawlerItem
 from aws_auchan_crawler.utils.regex_parser import RegexParser
 
 
@@ -56,6 +57,8 @@ class AuchanSpider(Spider):
         #TODO: scrap the prices and other data if useful
         # Gets the part of the website that contains the product data
         # It's necessary to isolate it as if not, it will also get the data of recommended products
+        product = AwsAuchanCrawlerItem()
+
         product_detail_selector = response.css(".product__top")[0]
         with open("test2.html", "w+", encoding="utf-8") as f:
             f.write(f"{response.url}\n\n{product_detail_selector.get()}")
@@ -73,6 +76,10 @@ class AuchanSpider(Spider):
         
 
 
-        #TODO: Save in db
-        with open("text_prod_list.txt", "a+", encoding="utf-8") as f:
-            f.write(f"- {response.url} -----;----- {additional_attributes} -----;----- {rating_value} -----;----- {rating_people_count} -----;----- {categories}\n")
+        product['name'] = categories[-1]
+        product['url'] = response.url
+        product['categories'] = categories
+        product['rating_people_count'] = rating_people_count
+        product['rating_value'] = rating_value
+        product['additional_attributes'] = additional_attributes
+        return product
