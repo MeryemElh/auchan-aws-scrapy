@@ -4,6 +4,8 @@ from scrapy.http.response.html import HtmlResponse
 from scrapy.exceptions import IgnoreRequest
 from twisted.python.failure import Failure
 
+from aws_auchan_crawler.utils.regex_parser import RegexParser
+
 
 class AuchanSpider(Spider):
     name = 'auchan'
@@ -12,6 +14,7 @@ class AuchanSpider(Spider):
     category_extractor = LinkExtractor(restrict_css=".navigation-node")
     sub_category_extractor = LinkExtractor(restrict_xpaths="//*[text() = 'Voir tous les produits']")
     product_extractor = LinkExtractor(restrict_xpaths="//article")
+    regex_parser = RegexParser()
 
     def parse(self, response: HtmlResponse):
         for link in self.category_extractor.extract_links(response):
@@ -50,6 +53,26 @@ class AuchanSpider(Spider):
             yield Request(link.url, callback=self.parse_product)
 
     def parse_product(self, response: HtmlResponse):
-        #TODO: scrap all the product infos
+        #TODO: scrap the prices and other data if useful
+        # Gets the part of the website that contains the product data
+        # It's necessary to isolate it as if not, it will also get the data of recommended products
+        product_detail_selector = response.css(".product__top")[0]
+        with open("test2.html", "w+", encoding="utf-8") as f:
+            f.write(f"{response.url}\n\n{product_detail_selector.get()}")
+
+        # The categories are hierarchical with the first one always being "Accueil" and the last one being the product name
+        selector_categories = response.xpath("//span[contains(@class, 'site-breadcrumb__item')]//a/text()")
+        categories = [selector_category.get() for selector_category in selector_categories]
+
+        # None if the rating isn't found, else it's an int represented as a string
+        rating_people_count = product_detail_selector.css(".rating-value__value::text").get()
+        rating_value = response.css(".reviews__statistics .rating-value--big::text").get()
+
+        # Use regexes to parse the data, known formats for now are 'Contenance : 300g' and 'Lot de 6 pièces'
+        additional_attributes = self.regex_parser.parse_additional_info(product_detail_selector.css(".product-attribute::attr(aria-label)").getall())
+        
+
+
+        #TODO: Save in db
         with open("text_prod_list.txt", "a+", encoding="utf-8") as f:
-            f.write(f"- {response.url}\n")
+            f.write(f"- {response.url} -----;----- {additional_attributes} -----;----- {rating_value} -----;----- {rating_people_count} -----;----- {categories}\n")
