@@ -1,12 +1,11 @@
-# Define here the models for your scraped items
-#
-# See documentation in:
-# https://docs.scrapy.org/en/latest/topics/items.html
-
 import scrapy
 
 
 class AwsAuchanCrawlerItem(scrapy.Item):
     # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+    name = scrapy.Field()
+    url = scrapy.Field()
+    categories = scrapy.Field()
+    rating_people_count = scrapy.Field()
+    rating_value = scrapy.Field()
+    additional_attributes = scrapy.Field()
