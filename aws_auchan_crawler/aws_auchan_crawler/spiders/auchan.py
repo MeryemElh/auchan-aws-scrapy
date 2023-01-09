@@ -1,3 +1,8 @@
+
+from os import makedirs, path
+
+import requests
+
 from scrapy import Spider, Request, Selector
 from scrapy.linkextractors import LinkExtractor
 from scrapy.http.response.html import HtmlResponse
@@ -6,6 +11,7 @@ from twisted.python.failure import Failure
 
 from aws_auchan_crawler.items import AwsAuchanCrawlerItem
 from aws_auchan_crawler.utils.regex_parser import RegexParser
+from aws_auchan_crawler.utils.functions import slugify
 
 
 class AuchanSpider(Spider):
@@ -105,7 +111,24 @@ class AuchanSpider(Spider):
             price = None
             currency = None
             base_price = None
-        
+
+        img_balise = product_detail_selector.xpath("//img[@class = 'product-gallery__picture']")
+
+        #TODO: Don't download here but in pipeline
+        image_path = f"data/icons/{slugify(categories[-1])}.jpg"
+        image_url = img_balise.xpath("@src").get()
+        img_data = requests.get(image_url).content
+        makedirs(path.dirname(image_path), exist_ok=True)
+        with open(image_path, 'wb+') as handler:
+            handler.write(img_data)
+            image_path = path.realpath(handler.name)
+
+        img = {
+            "alt": img_balise.xpath("@alt").get(),
+            "src": image_url,
+            "path": image_path
+        }
+
         product['name'] = categories[-1]
         product['url'] = response.url
         product['categories'] = categories
@@ -116,5 +139,6 @@ class AuchanSpider(Spider):
         product['base_price'] = base_price
         product['price'] = price
         product['currency'] = currency
+        product['img'] = img
         product['availability'] = available
         return product

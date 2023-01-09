@@ -12,5 +12,6 @@ class AwsAuchanCrawlerItem(scrapy.Item):
     base_price = scrapy.Field()
     price = scrapy.Field()
     currency = scrapy.Field()
+    img = scrapy.Field()
     brand = scrapy.Field()
     availability = scrapy.Field()
