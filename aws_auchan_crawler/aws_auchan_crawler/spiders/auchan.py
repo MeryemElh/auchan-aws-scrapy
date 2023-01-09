@@ -114,7 +114,6 @@ class AuchanSpider(Spider):
 
         img_balise = product_detail_selector.xpath("//img[@class = 'product-gallery__picture']")
 
-        #TODO: Don't download here but in pipeline
         image_path = f"data/icons/{slugify(categories[-1])}.jpg"
         image_url = img_balise.xpath("@src").get()
         img_data = requests.get(image_url).content
@@ -129,6 +128,11 @@ class AuchanSpider(Spider):
             "path": image_path
         }
 
+        variants_container = product_detail_selector.css(".variants__container")
+        variant_list = {}
+        for variant in variants_container:
+            variant_list[variant.xpath("@data-type").get()] = variant.css(".variantBtn").xpath("@data-variation-value").getall()
+
         product['name'] = categories[-1]
         product['url'] = response.url
         product['categories'] = categories
@@ -141,4 +145,5 @@ class AuchanSpider(Spider):
         product['currency'] = currency
         product['img'] = img
         product['availability'] = available
+        product['variants'] = variant_list
         return product

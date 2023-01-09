@@ -15,3 +15,4 @@ class AwsAuchanCrawlerItem(scrapy.Item):
     img = scrapy.Field()
     brand = scrapy.Field()
     availability = scrapy.Field()
+    variants = scrapy.Field()
