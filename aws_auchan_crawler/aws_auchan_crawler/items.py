@@ -9,3 +9,4 @@ class AwsAuchanCrawlerItem(scrapy.Item):
     rating_people_count = scrapy.Field()
     rating_value = scrapy.Field()
     additional_attributes = scrapy.Field()
+    brand = scrapy.Field()

@@ -31,6 +31,7 @@ class AuchanSpider(Spider):
             pass
 
     def parse_sub_category(self, response: HtmlResponse):
+        #TODO: not necessarily multiple pages
         list_pages =  response.css(".pagination-item::text").getall()
         last_page_nb = int(list_pages[-1])
 
@@ -64,8 +65,8 @@ class AuchanSpider(Spider):
             f.write(f"{response.url}\n\n{product_detail_selector.get()}")
 
         # The categories are hierarchical with the first one always being "Accueil" and the last one being the product name
-        selector_categories = response.xpath("//span[contains(@class, 'site-breadcrumb__item')]//a/text()")
-        categories = [selector_category.get() for selector_category in selector_categories]
+        categories = response.xpath("//span[contains(@class, 'site-breadcrumb__item')]//meta[@itemprop = 'name']/@content").getall()
+        brand = response.xpath("//span[contains(@class, 'site-breadcrumb__item')]//meta[@itemprop = 'brand']/@content").get()
 
         # None if the rating isn't found, else it's an int represented as a string
         rating_people_count = product_detail_selector.css(".rating-value__value::text").get()
@@ -79,6 +80,7 @@ class AuchanSpider(Spider):
         product['name'] = categories[-1]
         product['url'] = response.url
         product['categories'] = categories
+        product['brand'] = brand
         product['rating_people_count'] = rating_people_count
         product['rating_value'] = rating_value
         product['additional_attributes'] = additional_attributes

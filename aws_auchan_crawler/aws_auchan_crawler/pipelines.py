@@ -5,7 +5,7 @@ from itemadapter import ItemAdapter
 class AwsAuchanCrawlerPipeline:
 
     def open_spider(self, spider):
-        self.file = open('items1.json', 'w+')
+        self.file = open('products.json', 'w+')
 
     def close_spider(self, spider):
         self.file.close()
