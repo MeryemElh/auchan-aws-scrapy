@@ -24,6 +24,10 @@ class AuchanSpider(Spider):
     regex_parser = RegexParser()
 
     def parse(self, response: HtmlResponse):
+        # Get cookie from file
+        with open("data/config/lark_journey_cookie.txt", "r", encoding="utf-8") as f:
+            self.lark_journey = f.read()
+
         for link in self.category_extractor.extract_links(response):
             yield Request(link.url, callback=self.parse_category, errback=self.parse_category_err)
 
@@ -58,7 +62,7 @@ class AuchanSpider(Spider):
 
     def parse_product_page(self, response: HtmlResponse):
         for link in self.product_extractor.extract_links(response):
-            yield Request(link.url, callback=self.parse_product)
+            yield Request(link.url, cookies={"lark-journey": self.lark_journey}, callback=self.parse_product)
 
     def parse_product(self, response: HtmlResponse):
         #TODO: scrap the prices and other data if useful
