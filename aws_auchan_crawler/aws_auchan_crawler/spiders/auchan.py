@@ -74,9 +74,38 @@ class AuchanSpider(Spider):
 
         # Use regexes to parse the data, known formats for now are 'Contenance : 300g' and 'Lot de 6 pièces'
         additional_attributes = self.regex_parser.parse_additional_info(product_detail_selector.css(".product-attribute::attr(aria-label)").getall())
+
+        price_container = product_detail_selector.css(".product-price__container")
+
+        available = None
+        if product_detail_selector.css(".product-unavailable__message").get():
+            available = False
+
+        if price_container:
+            available = True
+
+            price_container = price_container[0]
         
+            price = price_container.xpath("//meta[@itemprop = 'price']/@content").get()            
+            currency = price_container.xpath("//meta[@itemprop = 'priceCurrency']/@content").get()
 
-
+            base_price_container = price_container.css(".product-price--small::text").get()
+            if base_price_container:
+                base_price_container = base_price_container.split("/")
+                base_price = {
+                    "value": base_price_container[0].strip().replace(",", ".", 1),
+                    "unit": base_price_container[1].strip()
+                }
+                while base_price["value"][-1] > "9" or base_price["value"][-1] < "0":
+                    base_price["value"] = base_price["value"][:len(base_price["value"])-1]
+            else:
+                base_price = None
+        
+        else:
+            price = None
+            currency = None
+            base_price = None
+        
         product['name'] = categories[-1]
         product['url'] = response.url
         product['categories'] = categories
@@ -84,4 +113,8 @@ class AuchanSpider(Spider):
         product['rating_people_count'] = rating_people_count
         product['rating_value'] = rating_value
         product['additional_attributes'] = additional_attributes
+        product['base_price'] = base_price
+        product['price'] = price
+        product['currency'] = currency
+        product['availability'] = available
         return product
