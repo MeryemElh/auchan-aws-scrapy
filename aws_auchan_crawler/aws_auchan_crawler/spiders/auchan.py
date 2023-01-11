@@ -71,8 +71,6 @@ class AuchanSpider(Spider):
         product = AwsAuchanCrawlerItem()
 
         product_detail_selector = response.css(".product__top")[0]
-        with open("test2.html", "w+", encoding="utf-8") as f:
-            f.write(f"{response.url}\n\n{product_detail_selector.get()}")
 
         # The categories are hierarchical with the first one always being "Accueil" and the last one being the product name
         categories = response.xpath("//span[contains(@class, 'site-breadcrumb__item')]//meta[@itemprop = 'name']/@content").getall()
