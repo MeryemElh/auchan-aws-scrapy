@@ -4,10 +4,10 @@ from typing import List
 
 class RegexParser():
     def __init__(self) -> None:
-        self.regex_single_contenance = regex_compile(r'^Contenance : (?P<contenance>\d*(?:|,|.\d*)|)(?:| )(?P<unit>[a-zA-Zéèçàù]*)$')
-        self.regex_multiple_contenance = regex_compile(r'^Contenance : (?P<nb>\d*(?:|,|.\d*)|)(?:| )x(?:| )(?P<contenance>\d*(?:|,|.\d*)|)(?:| )(?P<unit>[a-zA-Zéèçàù]*)$')
+        self.regex_single_contenance = regex_compile(r'^Contenance : (?P<contenance>[0-9]*(?:|,|\.\d*)|)(?:| )(?P<unit>[a-zA-Zéèçàù]*)$')
+        self.regex_multiple_contenance = regex_compile(r'^Contenance : (?P<nb>\d*(?:|,|\.\d*)|)(?:| )x(?:| )(?P<contenance>\d*(?:|,|\.\d*)|)(?:| )(?P<unit>[a-zA-Zéèçàù]*)$')
         self.regex_unknown_contenance = regex_compile(r'^Contenance : (?P<contenance>.*)$')
-        self.regex_lot = regex_compile(r'^Lot de (?P<lot>.*)$')
+        self.regex_lot = regex_compile(r'^Lot de (?P<lot_count>\d*)(?:| )(?P<unit>[a-zA-Zéèçàù]*)$')
 
 
     def parse_additional_info(self, data: List[str]) -> dict:

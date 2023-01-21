@@ -138,6 +138,8 @@ class AuchanSpider(Spider):
         s3_image_path = f"images/{basename(image_path)}"
         s3_item_path = f"items/{basename(image_path).rsplit('.', 1)[0]}.json"
 
+        shop = response.css(".context-header__pos::text").get()
+
         product['name'] = categories[-1]
         product['url'] = response.url
         product['categories'] = categories
@@ -155,4 +157,5 @@ class AuchanSpider(Spider):
             "image_path": s3_image_path,
             "item_path": s3_item_path
         }
+        product['shop'] = shop
         return product
