@@ -1,5 +1,6 @@
 
 from re import compile as regex_compile
+from typing import List
 
 class RegexParser():
     def __init__(self) -> None:
@@ -9,7 +10,7 @@ class RegexParser():
         self.regex_lot = regex_compile(r'^Lot de (?P<lot>.*)$')
 
 
-    def parse_additional_info(self, data: list[str]) -> dict:
+    def parse_additional_info(self, data: List[str]) -> dict:
         additional_info = {
             "single_contenances": [], # Known units are for now : 'l', 'ml', 'cl', 'g', 'kg', 'CL' and 'G'
             "multiple_contenances": [],
