@@ -1,4 +1,4 @@
-
+from os.path import basename
 from os import makedirs, path
 
 import requests
@@ -135,6 +135,9 @@ class AuchanSpider(Spider):
         for variant in variants_container:
             variant_list[variant.xpath("@data-type").get()] = variant.css(".variantBtn").xpath("@data-variation-value").getall()
 
+        s3_image_path = f"images/{basename(image_path)}"
+        s3_item_path = f"items/{basename(image_path).rsplit('.', 1)[0]}.json"
+
         product['name'] = categories[-1]
         product['url'] = response.url
         product['categories'] = categories
@@ -148,4 +151,8 @@ class AuchanSpider(Spider):
         product['img'] = img
         product['availability'] = available
         product['variants'] = variant_list
+        product['s3_paths'] = {
+            "image_path": s3_image_path,
+            "item_path": s3_item_path
+        }
         return product

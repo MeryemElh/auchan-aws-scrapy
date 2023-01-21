@@ -63,7 +63,8 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'aws_auchan_crawler.pipelines.AwsAuchanCrawlerPipeline': 300,
+    'aws_auchan_crawler.pipelines.AwsAuchanCrawlerFilePipeline': 300,
+    'aws_auchan_crawler.pipelines.AwsAuchanCrawlerS3Pipeline': 400,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

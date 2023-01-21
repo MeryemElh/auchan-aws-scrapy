@@ -16,3 +16,4 @@ class AwsAuchanCrawlerItem(scrapy.Item):
     brand = scrapy.Field()
     availability = scrapy.Field()
     variants = scrapy.Field()
+    s3_paths = scrapy.Field()
