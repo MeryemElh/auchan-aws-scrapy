@@ -23,11 +23,11 @@ class AwsAuchanCrawlerS3Pipeline:
 
     def process_item(self, item, spider):
 
-        self.s3_client.upload_file(item['img']['path'], "auchan-crawler", item['s3_paths']["image_path"])
+        self.s3_client.upload_file(item['img']['path'], "auchan-web-crawler", item['s3_paths']["image_path"])
 
         self.s3_client.put_object(
             Body=json.dumps(ItemAdapter(item).asdict()),
-            Bucket='auchan-crawler',
+            Bucket='auchan-web-crawler',
             Key=item['s3_paths']['item_path']
         )
 
