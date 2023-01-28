@@ -17,7 +17,7 @@ from aws_auchan_crawler.utils.functions import slugify
 class AuchanSpider(Spider):
     name = 'auchan'
     allowed_domains = ['auchan.fr']
-    start_urls = ['http://www.auchan.fr/']
+    start_urls = ['https://www.auchan.fr/']
     category_extractor = LinkExtractor(restrict_css=".navigation-node")
     sub_category_extractor = LinkExtractor(restrict_xpaths="//*[text() = 'Voir tous les produits']")
     product_extractor = LinkExtractor(restrict_xpaths="//article")

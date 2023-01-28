@@ -93,4 +93,4 @@ REQUEST_FINGERPRINTER_IMPLEMENTATION = '2.7'
 TWISTED_REACTOR = 'twisted.internet.asyncioreactor.AsyncioSelectorReactor'
 
 # Spider stops after a number of pages
-#CLOSESPIDER_PAGECOUNT = 100
+#CLOSESPIDER_PAGECOUNT = 50 
